@@ -1,5 +1,13 @@
 from fastapi import FastAPI
-from app.exercises import router
+from app import exercises, users
+
+from db.db_setup import engine
+from db.models import user, exercise, exercise_set, workout
+
+user.Base.metadata.create_all(bind=engine)
+exercise.Base.metadata.create_all(bind=engine)
+exercise_set.Base.metadata.create_all(bind=engine)
+workout.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Gym Exercises API",
               description='API for managing Gym Exercises',
@@ -11,4 +19,5 @@ app = FastAPI(title="Gym Exercises API",
                   "name": "MIT",
               }, )
 
-app.include_router(router)
+app.include_router(exercises.router)
+app.include_router(users.router)

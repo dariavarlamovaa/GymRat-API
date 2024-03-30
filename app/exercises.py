@@ -1,7 +1,6 @@
 from typing import Optional, List
 
 import fastapi
-from fastapi import Path
 from pydantic import BaseModel
 
 router = fastapi.APIRouter()
@@ -16,10 +15,10 @@ class Exercise(BaseModel):
 
 
 @router.get("/exercises", response_model=List[Exercise])
-async def get_user():
+async def get_exercises():
     return exercises
 
 
-@router.get("/users/{user_id}")
-async def get_user(exercise_id: int = Path(..., description='The id of the exercise')):
-    return {'user': exercises[exercise_id]}
+@router.get("/exercises/{exercise_id}")
+async def get_exercise(exercise_id):
+    return exercises
