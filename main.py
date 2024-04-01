@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app import exercises, users
+from app import exercise, user
 
 from db.db_setup import engine
 from db.models import user, exercise, exercise_set, workout

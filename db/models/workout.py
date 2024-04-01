@@ -4,10 +4,12 @@ from sqlalchemy.orm import relationship
 from db.db_setup import Base
 from db.models.mixins import Timestamp
 
-training_plan_training_unit = Table(
-    "workout_plan",
+workouts_exercises = Table(
+    "workouts_exercises",
     Base.metadata,
-    Column("workout_id", Integer, ForeignKey("workout.workout_id")),
+    Column("workout_id", Integer, ForeignKey("workouts.workout_id")),
+    Column('exercise_id', Integer, ForeignKey('exercises.exercise_id'))
+
 )
 
 
@@ -22,11 +24,9 @@ class Workout(Timestamp, Base):
     name = Column(String(40), nullable=False)
     description = Column(Text, nullable=True)
     expires = Column(Date, nullable=True)
-    exercise_set_id = Column(Integer, ForeignKey('exercise_sets.exercise_set_id'), nullable=True)
     owner_id = Column(Integer, ForeignKey('users.user_id'))
 
-    ex_set = relationship('ExerciseSet', back_populates="workout")
-    owner = relationship('User')
+    exercises = relationship('Exercise', secondary=workouts_exercises, back_populates="workout")
 
     def __repr__(self):
         return f'<Workout(id={self.workout_id}, name={self.name}>'

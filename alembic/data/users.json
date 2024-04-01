@@ -1,0 +1,12 @@
+[
+  {
+    "user_id": 1,
+    "username": "Dora",
+    "email": "doradora@mail.ru",
+    "hashed_password": "doradora",
+    "is_active": true,
+    "is_superuser": false,
+    "created_at": "2024-04-01 16:00:00-06",
+    "updated_at": "2024-04-01 16:00:00-06"
+  }
+]

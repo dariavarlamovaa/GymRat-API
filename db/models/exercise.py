@@ -4,8 +4,8 @@ from sqlalchemy import Column, String, Integer, Enum, Text, ForeignKey, Time, Fl
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import URLType
 
-
 from db.db_setup import Base
+from db.models.workout import workouts_exercises
 
 
 class Type(enum.Enum):
@@ -39,8 +39,7 @@ class Exercise(Base):
     url = Column(URLType, nullable=True)
     owner_id = Column(Integer, ForeignKey('users.user_id'))
 
-    owner = relationship("User")
-    ex_set = relationship('ExerciseSet', back_populates="exercise")
+    workouts = relationship("Workout", secondary=workouts_exercises, back_populates='exercises')
 
     def __repr__(self):
         return f"<Exercise(id={self.exercise_id}, title={self.title})>"

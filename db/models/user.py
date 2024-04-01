@@ -18,3 +18,12 @@ class User(Timestamp, Base):
 
     def __repr__(self):
         return f"<User(username={self.username}, email={self.email})>"
+# op.add_column('exercises',
+#                   sa.Column('exercise_type', postgresql.ENUM('weight', 'cardio', name='type'), autoincrement=False,
+#                             nullable=True))
+#     op.add_column('exercises',
+#                   sa.Column('muscle', postgresql.ENUM('arms', 'core', 'full_body', 'back', 'legs', name='majormuscle'),
+#                             autoincrement=False, nullable=True))
+#     op.add_column('exercises',
+#                   sa.Column('level', postgresql.ENUM('beginner', 'intermediate', 'expert', name='level'),
+#                             autoincrement=False, nullable=True))
