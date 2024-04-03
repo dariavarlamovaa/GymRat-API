@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, Text, String, Date, ForeignKey, UniqueConstraint, Table
 from sqlalchemy.orm import relationship
 
-from db.db_setup import Base
-from db.models.mixins import Timestamp
+from gymrat.db.db_setup import Base
+from gymrat.db.models.mixins import Timestamp
 
 workouts_exercises = Table(
     "workouts_exercises",
@@ -26,7 +26,8 @@ class Workout(Timestamp, Base):
     expires = Column(Date, nullable=True)
     owner_id = Column(Integer, ForeignKey('users.user_id'))
 
-    exercises = relationship('Exercise', secondary=workouts_exercises, back_populates="workout")
+    owner = relationship('User', back_populates='workouts')
+    exercises = relationship('Exercise', secondary=workouts_exercises, back_populates="workouts")
 
     def __repr__(self):
         return f'<Workout(id={self.workout_id}, name={self.name}>'

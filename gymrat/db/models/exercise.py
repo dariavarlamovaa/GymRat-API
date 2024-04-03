@@ -1,19 +1,19 @@
 import enum
 
-from sqlalchemy import Column, String, Integer, Enum, Text, ForeignKey, Time, Float, Date
+from sqlalchemy import Column, String, Integer, Enum, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import URLType
 
-from db.db_setup import Base
-from db.models.workout import workouts_exercises
+from gymrat.db.db_setup import Base
+from gymrat.db.models.workout import workouts_exercises
 
 
-class Type(enum.Enum):
+class Type(enum.IntEnum):
     weight = 1
     cardio = 2
 
 
-class MajorMuscle(enum.Enum):
+class MajorMuscle(enum.IntEnum):
     arms = 1
     core = 2
     full_body = 3
@@ -21,7 +21,7 @@ class MajorMuscle(enum.Enum):
     legs = 5
 
 
-class Level(enum.Enum):
+class Level(enum.IntEnum):
     beginner = 1
     intermediate = 2
     expert = 3
@@ -35,7 +35,10 @@ class Exercise(Base):
     exercise_type = Column(Enum(Type))
     muscle = Column(Enum(MajorMuscle))
     level = Column(Enum(Level))
-    description = Column(Text, nullable=False)
+    set_number = Column(Integer, nullable=True)
+    reps = Column(Integer, nullable=False)
+    tips = Column(Text, nullable=True)
+    description = Column(Text, nullable=True)
     url = Column(URLType, nullable=True)
     owner_id = Column(Integer, ForeignKey('users.user_id'))
 
