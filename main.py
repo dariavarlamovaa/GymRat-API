@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from gymrat.api import users, exercises
+from gymrat.api.routers import users, exercises, auth
 
 from gymrat.db.db_setup import engine
 from gymrat.db.models import workout, exercise, user
@@ -20,3 +20,4 @@ app = FastAPI(title="Gym Exercises API",
 
 app.include_router(exercises.router)
 app.include_router(users.router)
+app.include_router(auth.router)

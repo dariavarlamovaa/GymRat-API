@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from gymrat.db.models.user import User
 from gymrat.schemas.user import UserCreate
-from security import get_hashed_password
+from security import get_hashed_password, verify_password
 
 
 def get_user_by_id(db: Session, user_id: int):
@@ -46,3 +46,16 @@ def create_user(db: Session, user_create: UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def is_super_user(user: User) -> bool:
+    return user.is_superuser
+
+
+def authenticate(db: Session, username: str, password: str) -> Optional[User]:
+    user = get_user_by_username(db, username)
+    if not user:
+        return None
+    if not verify_password(password, user.hashed_password):
+        return None
+    return user
