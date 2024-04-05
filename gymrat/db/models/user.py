@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 
-from db.db_setup import Base
-from db.models.mixins import Timestamp
+from gymrat.db.db_setup import Base
+from gymrat.db.models.mixins import Timestamp
 
 
 class User(Timestamp, Base):

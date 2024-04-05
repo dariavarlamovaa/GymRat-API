@@ -1,12 +1,11 @@
 from fastapi import FastAPI
-from app import exercises, users
+from gymrat.api.routers import users, exercises, auth
 
-from db.db_setup import engine
-from db.models import user, exercise, exercise_set, workout
+from gymrat.db.db_setup import engine
+from gymrat.db.models import workout, exercise, user
 
 user.Base.metadata.create_all(bind=engine)
 exercise.Base.metadata.create_all(bind=engine)
-exercise_set.Base.metadata.create_all(bind=engine)
 workout.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Gym Exercises API",
@@ -21,3 +20,4 @@ app = FastAPI(title="Gym Exercises API",
 
 app.include_router(exercises.router)
 app.include_router(users.router)
+app.include_router(auth.router)
