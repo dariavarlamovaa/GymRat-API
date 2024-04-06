@@ -5,7 +5,7 @@ from fastapi import status
 from sqlalchemy.orm import Session
 
 from gymrat.db.models.user import User
-from gymrat.schemas.user import UserCreate
+from gymrat.schemas.user import UserCreate, UserUpdate
 from security import get_hashed_password, verify_password
 
 
@@ -46,6 +46,37 @@ def create_user(db: Session, user_create: UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def delete_user(db: Session, user_id: int, current_user: User):
+    user = get_user_by_id(db=db, user_id=user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {user_id} not found. Cannot delete.")
+    if user_id == current_user.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"You cannot delete yourself")
+    try:
+        db.delete(user)
+        db.commit()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'Can`t delete this user, {str(e)}'
+        )
+    return {f'User with id {user_id} deleted'}
+
+
+def update_user(db: Session, user_update: UserUpdate, current_user: User):
+    if user_update.password is not None:
+        user_password = user_update.password
+        current_user.hashed_password = get_hashed_password(user_password)
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+    return current_user
 
 
 def is_super_user(user: User) -> bool:

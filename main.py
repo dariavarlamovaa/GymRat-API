@@ -8,7 +8,7 @@ user.Base.metadata.create_all(bind=engine)
 exercise.Base.metadata.create_all(bind=engine)
 workout.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Gym Exercises API",
+app = FastAPI(title="Gym Rat API",
               description='API for managing Gym Exercises',
               version="0.0.1",
               contact={

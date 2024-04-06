@@ -8,16 +8,16 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def create_access_token(subject: Union[str, Any], expires_delta: timedelta = None) -> str:
+def create_access_token(sub: Union[str, Any], expires_delta: timedelta = None) -> str:
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=30)
-    to_encode = {"exp": expire, "sub": str(subject)}
-    encoded_jwt = jwt.encode(
+    to_encode = {"exp": expire, "sub": str(sub)}
+    encoded = jwt.encode(
         to_encode, 'secretkey', algorithm='HS256'
     )
-    return encoded_jwt
+    return encoded
 
 
 def get_hashed_password(not_hashed_password: str) -> str:

@@ -14,12 +14,12 @@ from security import create_access_token
 router = fastapi.APIRouter()
 
 
-@router.post('login-user/', response_model=Token)
+@router.post('/login', response_model=Token)
 async def login_user(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()) -> Dict[str, Any]:
     user = authenticate(db, username=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_401_UNAUTHORIZED,
             detail='Invalid username or password')
     if not user.is_active:
         raise HTTPException(
@@ -28,7 +28,7 @@ async def login_user(db: Session = Depends(get_db), form_data: OAuth2PasswordReq
         )
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
-        subject=user.user_id, expires_delta=access_token_expires
+        sub=user.user_id, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
