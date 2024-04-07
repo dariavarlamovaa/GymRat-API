@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+from sqlmodel import SQLModel
 
 from pydantic import BaseModel, EmailStr, ConfigDict
 
@@ -10,18 +11,28 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    username: str
     email: EmailStr
     password: str
 
 
-class UserUpdate(BaseModel):
+class UserUpdate(UserBase):
     password: Optional[str] = None
     is_superuser: bool = False
 
 
+class UserUpdateMyData(SQLModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+
+
+class UserUpdatePassword(BaseModel):
+    current_password: str
+    new_password: str
+
+
 class UserOut(UserBase):
     user_id: int
+    is_superuser: bool
     created_at: datetime
     updated_at: datetime
 

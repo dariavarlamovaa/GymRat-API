@@ -2,7 +2,7 @@ import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from gymrat.crud.users import get_user_by_id, is_super_user
+from gymrat.crud.users import get_user_by_id
 from gymrat.db.db_setup import get_db
 from gymrat.db.models.user import User
 from gymrat.schemas.auth import TokenPayload
@@ -37,3 +37,7 @@ def get_current_super_user(current_user: User = Depends(get_current_user)) -> Us
             detail='Access Forbidden'
         )
     return current_user
+
+
+def is_super_user(user: User) -> bool:
+    return user.is_superuser

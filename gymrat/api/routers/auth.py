@@ -6,10 +6,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Dict, Any
 
-from gymrat.crud.users import authenticate
+from gymrat.crud.users import authenticate, get_user_by_username, create_user
 from gymrat.db.db_setup import get_db
-from gymrat.schemas.auth import Token
-from security import create_access_token
+from gymrat.schemas.auth import Token, Register
+from gymrat.schemas.user import UserCreate
+from security import create_access_token, get_hashed_password
 
 router = fastapi.APIRouter()
 
@@ -32,3 +33,18 @@ async def login_user(db: Session = Depends(get_db), form_data: OAuth2PasswordReq
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+@router.post('/signup', status_code=status.HTTP_201_CREATED)
+def register(new_user: Register, db: Session = Depends(get_db)):
+    user = get_user_by_username(db, new_user.username)
+    if user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f'User with username - "{new_user.username}" already exists'
+        )
+    user_created = UserCreate(
+        **new_user.model_dump(exclude_unset=True, exclude_defaults=True),
+        hashed_password=get_hashed_password(new_user.password)
+    )
+    create_user(db, user_created)
+    return user_created

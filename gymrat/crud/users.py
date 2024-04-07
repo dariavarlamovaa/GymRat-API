@@ -5,7 +5,7 @@ from fastapi import status
 from sqlalchemy.orm import Session
 
 from gymrat.db.models.user import User
-from gymrat.schemas.user import UserCreate, UserUpdate
+from gymrat.schemas.user import UserCreate, UserUpdate, UserUpdatePassword, UserUpdateMyData
 from security import get_hashed_password, verify_password
 
 
@@ -79,8 +79,39 @@ def update_user(db: Session, user_update: UserUpdate, current_user: User):
     return current_user
 
 
-def is_super_user(user: User) -> bool:
-    return user.is_superuser
+def update_my_own_data(db: Session, new_data: UserUpdateMyData, current_user: User) -> User:
+    user_username = get_user_by_username(db, username=new_data.username)
+    user_email = get_user_by_email(db, email=new_data.email)
+    if user_username is not None or user_email is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='User with this email or username already exists'
+        )
+    if new_data.username is not None:
+        current_user.username = new_data.username
+    if new_data.email is not None:
+        current_user.email = new_data.email
+    db.add(current_user)
+    db.commit()
+    return current_user
+
+
+def update_my_owm_password(db: Session, new_password_data: UserUpdatePassword, current_user: User):
+    if not verify_password(new_password_data.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='Incorrect password'
+        )
+    if new_password_data.current_password == new_password_data.new_password:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='New password cannot be the same as the current one'
+        )
+    hashed_password = get_hashed_password(new_password_data.new_password)
+    current_user.hashed_password = hashed_password
+    db.add(current_user)
+    db.commit()
+    return 'Password successfully updated'
 
 
 def authenticate(db: Session, username: str, password: str) -> Optional[User]:
