@@ -2,7 +2,7 @@ import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from gymrat.crud.users import get_user_by_id
+from gymrat.crud.users import user_crud
 from gymrat.db.db_setup import get_db
 from gymrat.db.models.user import User
 from gymrat.schemas.auth import TokenPayload
@@ -22,7 +22,7 @@ def get_token(token: str = Depends(oauth2_scheme)) -> TokenPayload:
 
 
 def get_current_user(db: Session = Depends(get_db), token: TokenPayload = Depends(get_token)) -> User:
-    user = get_user_by_id(db, token.sub)
+    user = user_crud.get_one(db, User.user_id == token.sub)
     if user is None:
         raise HTTPException(
             status_code=401,

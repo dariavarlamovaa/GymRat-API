@@ -65,17 +65,21 @@ def upgrade() -> None:
                     sa.Column('url', sa.TEXT(), autoincrement=False, nullable=True),
                     sa.Column('owner_id', sa.INTEGER(), autoincrement=False, nullable=True),
                     sa.ForeignKeyConstraint(['owner_id'], ['users.user_id'], name='exercises_owner_id_fkey'),
+                    sa.Column('created_at', sa.DateTime(timezone=True),
+                              server_default=sa.text("now()"), autoincrement=False, nullable=False),
+                    sa.Column('updated_at', sa.DateTime(timezone=True),
+                              server_default=sa.text("now()"), autoincrement=False, nullable=False),
                     sa.PrimaryKeyConstraint('exercise_id', name='exercises_pkey'),
                     sa.UniqueConstraint('title', name='exercises_title_key')
                     )
     op.add_column('exercises',
-                  sa.Column('exercise_type', postgresql.ENUM('weight', 'cardio', name='type'), autoincrement=False,
+                  sa.Column('exercise_type', sa.ENUM('weight', 'cardio', name='type'), autoincrement=False,
                             nullable=True))
     op.add_column('exercises',
-                  sa.Column('muscle', postgresql.ENUM('arms', 'core', 'full_body', 'back', 'legs', name='majormuscle'),
+                  sa.Column('muscle', sa.ENUM('arms', 'core', 'full_body', 'back', 'legs', name='majormuscle'),
                             autoincrement=False, nullable=True))
     op.add_column('exercises',
-                  sa.Column('level', postgresql.ENUM('beginner', 'intermediate', 'expert', name='level'),
+                  sa.Column('level', sa.ENUM('beginner', 'intermediate', 'expert', name='level'),
                             autoincrement=False, nullable=True))
     op.create_index('ix_exercises_exercise_id', 'exercises', ['exercise_id'], unique=False)
 
