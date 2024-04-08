@@ -6,6 +6,7 @@ from sqlalchemy_utils import URLType
 
 from gymrat.db.db_setup import Base
 from gymrat.db.models.workout import workouts_exercises
+from gymrat.db.models.mixins import Timestamp
 
 
 class Type(enum.IntEnum):
@@ -27,7 +28,7 @@ class Level(enum.IntEnum):
     expert = 3
 
 
-class Exercise(Base):
+class Exercise(Timestamp, Base):
     __tablename__ = 'exercises'
     exercise_id = Column(Integer, primary_key=True, index=True)
     title = Column(String(50), unique=True, nullable=False)

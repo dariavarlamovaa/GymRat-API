@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Dict, Any
 
-from gymrat.crud.users import authenticate, get_user_by_username, create_user
+from gymrat.crud.users import user_crud
 from gymrat.db.db_setup import get_db
 from gymrat.schemas.auth import Token, Register
 from gymrat.schemas.user import UserCreate
@@ -17,7 +17,7 @@ router = fastapi.APIRouter()
 
 @router.post('/login', response_model=Token)
 async def login_user(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()) -> Dict[str, Any]:
-    user = authenticate(db, username=form_data.username, password=form_data.password)
+    user = user_crud.authenticate(db, username=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,
@@ -36,7 +36,7 @@ async def login_user(db: Session = Depends(get_db), form_data: OAuth2PasswordReq
 
 @router.post('/signup', status_code=status.HTTP_201_CREATED)
 def register(new_user: Register, db: Session = Depends(get_db)):
-    user = get_user_by_username(db, new_user.username)
+    user = user_crud.get_user_by_username(db, new_user.username)
     if user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -46,5 +46,5 @@ def register(new_user: Register, db: Session = Depends(get_db)):
         **new_user.model_dump(exclude_unset=True, exclude_defaults=True),
         hashed_password=get_hashed_password(new_user.password)
     )
-    create_user(db, user_created)
+    user_crud.create_user(db, user_created)
     return user_created

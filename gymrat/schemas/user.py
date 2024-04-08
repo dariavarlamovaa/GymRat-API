@@ -13,6 +13,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     email: EmailStr
     password: str
+    is_superuser: bool = False
 
 
 class UserUpdate(UserBase):
@@ -35,9 +36,4 @@ class UserOut(UserBase):
     is_superuser: bool
     created_at: datetime
     updated_at: datetime
-
-
-class User(UserBase):
-    hashed_password: str
-    is_superuser: bool = False
     model_config = ConfigDict(from_attributes=True)
