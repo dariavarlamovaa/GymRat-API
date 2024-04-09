@@ -9,23 +9,23 @@ from gymrat.db.models.workout import workouts_exercises
 from gymrat.db.models.mixins import Timestamp
 
 
-class Type(enum.IntEnum):
-    weight = 1
-    cardio = 2
+class Type(enum.Enum):
+    weight = 'weight'
+    cardio = 'cardio'
 
 
-class MajorMuscle(enum.IntEnum):
-    arms = 1
-    core = 2
-    full_body = 3
-    back = 4
-    legs = 5
+class MajorMuscle(enum.Enum):
+    arms = 'arms'
+    core = 'core'
+    full_body = 'full body'
+    back = 'back'
+    legs = 'legs'
 
 
-class Level(enum.IntEnum):
-    beginner = 1
-    intermediate = 2
-    expert = 3
+class Level(enum.Enum):
+    beginner = 'beginner'
+    intermediate = 'intermediate'
+    expert = 'expert'
 
 
 class Exercise(Timestamp, Base):
@@ -36,7 +36,7 @@ class Exercise(Timestamp, Base):
     exercise_type = Column(Enum(Type))
     muscle = Column(Enum(MajorMuscle))
     level = Column(Enum(Level))
-    set_number = Column(Integer, nullable=True)
+    sets = Column(Integer, nullable=True)
     reps = Column(Integer, nullable=False)
     tips = Column(Text, nullable=True)
     description = Column(Text, nullable=True)

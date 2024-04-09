@@ -7,7 +7,7 @@ from gymrat.db.db_setup import get_db
 from gymrat.db.models.user import User
 from gymrat.schemas.auth import TokenPayload
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def get_token(token: str = Depends(oauth2_scheme)) -> TokenPayload:

@@ -18,6 +18,11 @@ app = FastAPI(title="Gym Rat API",
                   "name": "MIT",
               }, )
 
-app.include_router(exercises.router)
-app.include_router(users.router)
-app.include_router(auth.router)
+app.include_router(exercises.router, prefix='/exercises', tags=['exercises'])
+app.include_router(users.router, prefix='/users', tags=['users'])
+app.include_router(auth.router, prefix='/auth', tags=['auth'])
+
+
+@app.get("/")
+def root():
+    return {"message": "Hi, Gym Rat <3"}

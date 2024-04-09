@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 ORMModel = TypeVar("ORMModel")
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
+# CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 # UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 # OwnerIDType = int
 
