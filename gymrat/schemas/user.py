@@ -17,11 +17,12 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
+    username: Optional[str] = None
     password: Optional[str] = None
     is_superuser: bool = False
 
 
-class UserUpdateMyData(SQLModel):
+class UserUpdateMyData(BaseModel):
     username: Optional[str] = None
     email: Optional[EmailStr] = None
 

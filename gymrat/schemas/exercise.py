@@ -3,30 +3,32 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from gymrat.schemas.user import UserOut
-
 
 class ExerciseBase(BaseModel):
     title: str
     equipment: str
-    muscle: Optional[int] = Field(title='arms(1), core(2), full body(3), back(4), legs(5)')
-    exercise_type: int = Field(title='weight(1), cardio(2)')
-    level: int = Field(title='beginner(1), intermediate(2), expert(3)')
-    description: int = Field(title='The description of the exercise')
-    reps: Optional[int]
-    tips: Optional[str]
+    muscle: Optional[str] = Field(title='arms, core, full body, back, legs')
+    exercise_type: Optional[str] = Field(title='weight, cardio')
+    level: Optional[str] = Field(title='beginner, intermediate, expert')
+    description: Optional[str] = Field(title='The description of the exercise')
+    tips: Optional[str] = Field(title='The tips of the exercise')
 
 
 class ExerciseCreate(ExerciseBase):
-    ...
+    sets: Optional[int]
+    reps: Optional[int]
+    tips: Optional[str]
+    description: Optional[str] = None
+    tips: Optional[str] = None
 
 
 class ExerciseUpdate(ExerciseBase):
     title: Optional[str] = None
-    muscle: Optional[int] = Field(title='arms(1), core(2), full body(3), back(4), legs(5)')
-    exercise_type: Optional[int] = Field(title='weight(1), cardio(2)')
-    level: Optional[int] = Field(title='beginner(1), intermediate(2), expert(3)')
-    set_number: Optional[int] = None
+    equipment: Optional[str] = None
+    exercise_type: Optional[str] = None
+    muscle: Optional[str] = None
+    level: Optional[str] = None
+    sets: Optional[int] = None
     reps: Optional[int] = None
     tips: Optional[str] = None
     description: Optional[str] = None
@@ -35,14 +37,16 @@ class ExerciseUpdate(ExerciseBase):
 class ExerciseOut(ExerciseBase):
     exercise_id: int
     title: str
-    exercise_type: Optional[int] = None
-    muscle: Optional[int] = None
-    level: Optional[int] = None
-    set_number: Optional[int] = None
+    exercise_type: Optional[str] = None
+    muscle: Optional[str] = None
+    level: Optional[str] = None
+    sets: Optional[int] = None
     reps: Optional[int] = None
     tips: Optional[str] = None
     description: Optional[str] = None
-    owner: Optional[UserOut]
+    owner_id: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Exercise(ExerciseBase):
