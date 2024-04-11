@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Dict, Any
 
-from gymrat.crud.users import user_crud
+from gymrat.crud.user import user_crud
 from gymrat.db.db_setup import get_db
 from gymrat.schemas.auth import Token, Register
 from gymrat.schemas.user import UserCreate

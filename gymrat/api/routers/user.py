@@ -4,11 +4,11 @@ from typing import List, Optional
 
 from gymrat.db.models.user import User
 from gymrat.api.dependencies import get_current_super_user, get_current_user
-from gymrat.crud.users import user_crud
+from gymrat.crud.user import user_crud
 
 from gymrat.db.db_setup import get_db
 from gymrat.schemas.user import UserOut, UserCreate, UserUpdate, UserUpdatePassword, UserUpdateMyData
-from security import verify_password
+from security import verify_password, get_hashed_password
 
 router = APIRouter()
 
@@ -63,6 +63,7 @@ async def fetch_user_by_email(
         )
     return user
 
+
 @router.post("/create", response_model=UserOut, status_code=status.HTTP_201_CREATED,
              dependencies=[Depends(get_current_super_user)])
 async def create_new_user(
@@ -105,7 +106,7 @@ async def delete_one_user(
             detail='Super users can`t delete themselves'
         )
     try:
-        user_crud.delete_user(db, user)
+        user_crud.delete(db, user)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -120,14 +121,17 @@ async def update_one_user(
         user_update: UserUpdate,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_super_user)):
-    user = user_crud.get_user_by_id(db=db, user_id=user_id)
+    user = user_crud.get_one(db, User.user_id == user_id)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'User with {user_id} not found'
         )
+    if user_update.password is not None:
+        user_password = user_update.password
+        current_user.hashed_password = get_hashed_password(user_password)
     try:
-        user = user_crud.update_user(db, user_update, current_user)
+        user = user_crud.update(db, user, user_update)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -158,7 +162,13 @@ async def update_my_data(
         current_user.username = new_data.username
     if new_data.email is not None:
         current_user.email = new_data.email
-    user_crud.update_my_own_data(db, current_user)
+    try:
+        user_crud.update(db, current_user, new_data)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'Something went wrong. Error - {str(e)}'
+        )
     return current_user
 
 
@@ -178,7 +188,9 @@ async def update_my_password(
             detail='New password cannot be the same as the current one'
         )
     try:
-        user_crud.update_my_owm_password(db, new_password_data, current_user)
+        hashed_password = get_hashed_password(new_password_data.new_password)
+        current_user.hashed_password = hashed_password
+        user_crud.update(db, current_user, new_password_data)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

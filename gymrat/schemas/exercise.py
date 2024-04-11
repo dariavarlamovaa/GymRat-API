@@ -24,7 +24,11 @@ class ExerciseCreate(ExerciseBase):
 
 class ExerciseUpdate(ExerciseBase):
     title: Optional[str] = None
-    set_number: Optional[int] = None
+    equipment: Optional[str] = None
+    exercise_type: Optional[str] = None
+    muscle: Optional[str] = None
+    level: Optional[str] = None
+    sets: Optional[int] = None
     reps: Optional[int] = None
     tips: Optional[str] = None
     description: Optional[str] = None
@@ -33,14 +37,16 @@ class ExerciseUpdate(ExerciseBase):
 class ExerciseOut(ExerciseBase):
     exercise_id: int
     title: str
-    exercise_type: Optional[int] = None
-    muscle: Optional[int] = None
-    level: Optional[int] = None
-    set_number: Optional[int] = None
+    exercise_type: Optional[str] = None
+    muscle: Optional[str] = None
+    level: Optional[str] = None
+    sets: Optional[int] = None
     reps: Optional[int] = None
     tips: Optional[str] = None
     description: Optional[str] = None
     owner_id: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Exercise(ExerciseBase):

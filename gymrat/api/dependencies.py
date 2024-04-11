@@ -2,7 +2,7 @@ import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from gymrat.crud.users import user_crud
+from gymrat.crud.user import user_crud
 from gymrat.db.db_setup import get_db
 from gymrat.db.models.user import User
 from gymrat.schemas.auth import TokenPayload

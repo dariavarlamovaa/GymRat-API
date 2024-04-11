@@ -31,7 +31,7 @@ class Level(enum.Enum):
 class Exercise(Timestamp, Base):
     __tablename__ = 'exercises'
     exercise_id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(50), unique=True, nullable=False)
+    title = Column(String(50), nullable=False)
     equipment = Column(String(100), nullable=False)
     exercise_type = Column(Enum(Type))
     muscle = Column(Enum(MajorMuscle))
