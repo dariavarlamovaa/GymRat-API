@@ -37,7 +37,7 @@ class Exercise(Timestamp, Base):
     muscle = Column(Enum(MajorMuscle))
     level = Column(Enum(Level))
     sets = Column(Integer, nullable=True)
-    reps = Column(Integer, nullable=False)
+    reps = Column(Integer, nullable=True)
     tips = Column(Text, nullable=True)
     description = Column(Text, nullable=True)
     url = Column(URLType, nullable=True)

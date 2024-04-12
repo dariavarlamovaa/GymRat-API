@@ -38,7 +38,7 @@ async def fetch_one_exercise(
 
 @router.get("/title/{exercise_title}", response_model=Optional[ExerciseOut],
             dependencies=[Depends(get_current_super_user)])
-async def fetch_one_exercise(
+async def fetch_one_exercise_by_title(
         exercise_title: str = Path(..., description='The title of the exercise'),
         db: Session = Depends(get_db)):
     exercise = exercise_crud.get_one(db, Exercise.title == exercise_title)
@@ -128,7 +128,7 @@ async def update_exercise(
     if not current_user.is_superuser and (exercise.owner_id != current_user.user_id):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"You don`t have permission to delete this user")
+            detail=f"You don`t have permission to update this exercise")
     try:
         exercise_crud.update(db, exercise, exercise_update)
     except Exception as e:

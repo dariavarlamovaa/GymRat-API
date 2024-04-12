@@ -10,7 +10,6 @@ class WorkoutBase(BaseModel):
     name: str
     description: Optional[str] = None
     expires: Optional[date] = None
-    owner_id: int
 
 
 class WorkoutCreate(WorkoutBase):
@@ -24,7 +23,7 @@ class WorkoutUpdate(WorkoutBase):
 class WorkoutOut(WorkoutBase):
     workout_id: int
     owner_id: int
-    expires: date
+    expires: Optional[date] = None
 
 
 class Workout(WorkoutBase):
