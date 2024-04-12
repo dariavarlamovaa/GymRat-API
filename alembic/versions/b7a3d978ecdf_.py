@@ -59,7 +59,7 @@ def upgrade() -> None:
                     sa.Column('title', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
                     sa.Column('equipment', sa.VARCHAR(length=100), autoincrement=False, nullable=False),
                     sa.Column('sets', sa.INTEGER(), autoincrement=False, nullable=True),
-                    sa.Column('reps', sa.INTEGER(), autoincrement=False, nullable=False),
+                    sa.Column('reps', sa.INTEGER(), autoincrement=False, nullable=True),
                     sa.Column('tips', sa.TEXT(), autoincrement=False, nullable=True),
                     sa.Column('description', sa.TEXT(), autoincrement=False, nullable=True),
                     sa.Column('url', sa.TEXT(), autoincrement=False, nullable=True),

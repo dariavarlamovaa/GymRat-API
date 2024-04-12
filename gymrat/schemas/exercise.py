@@ -15,9 +15,8 @@ class ExerciseBase(BaseModel):
 
 
 class ExerciseCreate(ExerciseBase):
-    sets: Optional[int]
-    reps: Optional[int]
-    tips: Optional[str]
+    sets: Optional[int] = None
+    reps: Optional[int] = None
     description: Optional[str] = None
     tips: Optional[str] = None
 
