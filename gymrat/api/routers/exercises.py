@@ -103,7 +103,7 @@ async def create_new_exercise(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     try:
-        exercise = exercise_crud.create_exercise(exercise_create, db, owner_id=current_user.user_id)
+        exercise = exercise_crud.create_with_owner(db, exercise_create, owner_id=current_user.user_id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -139,7 +139,8 @@ async def update_exercise(
     return exercise
 
 
-@router.delete('/delete/{exercise_id}', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_user)])
+@router.delete('/delete/{exercise_id}', status_code=status.HTTP_200_OK,
+               dependencies=[Depends(get_current_user), Depends(get_current_super_user)])
 async def delete_exercise(
         exercise_id: int,
         db: Session = Depends(get_db),

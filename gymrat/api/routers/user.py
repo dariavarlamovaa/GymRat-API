@@ -64,7 +64,7 @@ async def fetch_user_by_email(
     return user
 
 
-@router.post("/create", response_model=UserOut, status_code=status.HTTP_201_CREATED,
+@router.post("/create", response_model=Optional[UserOut], status_code=status.HTTP_201_CREATED,
              dependencies=[Depends(get_current_super_user)])
 async def create_new_user(
         user_create: UserCreate,
@@ -77,13 +77,14 @@ async def create_new_user(
             detail='User with this email or username already exists'
         )
     try:
-        user_crud.create_user(db, user_create)
+        user_create.hashed_password = get_hashed_password(user_create.hashed_password)
+        user = user_crud.create(db, user_create)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'Can`t delete this user, {str(e)}'
         )
-    return user_create
+    return user
 
 
 @router.delete('/delete/{user_id}', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_super_user)])

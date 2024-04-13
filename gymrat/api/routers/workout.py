@@ -8,7 +8,7 @@ from gymrat.db.db_setup import get_db
 from gymrat.crud.workout import workout_crud
 from gymrat.db.models.user import User
 from gymrat.db.models.workout import Workout
-from gymrat.schemas.workout import WorkoutOut, WorkoutCreate
+from gymrat.schemas.workout import WorkoutOut, WorkoutCreate, WorkoutUpdate
 
 router = APIRouter()
 
@@ -108,7 +108,7 @@ async def create_new_workout(
             detail=f"Workout with name '{workout_create.name}' already exists"
         )
     try:
-        workout = workout_crud.create_workout(workout_create, db, owner_id=current_user.user_id)
+        workout = workout_crud.create_with_owner(db, workout_create, owner_id=current_user.user_id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -117,3 +117,54 @@ async def create_new_workout(
     return workout
 
 
+@router.put('/update/{workout_id}', response_model=Optional[WorkoutOut], status_code=status.HTTP_200_OK,
+            dependencies=[Depends(get_current_user)])
+async def update_workout(
+        workout_id: int,
+        exercise_update: WorkoutUpdate,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)):
+    workout = workout_crud.get_one(db, Workout.workout_id == workout_id)
+    if workout is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'Workout with id {workout_id} not found'
+        )
+    if not current_user.is_superuser and (workout.owner_id != current_user.user_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"You don`t have permission to update this workout")
+    try:
+        workout_crud.update(db, workout, exercise_update)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f'Something went wrong. {str(e)}'
+        )
+    return workout
+
+
+@router.delete('/delete/{workout_id}', status_code=status.HTTP_200_OK,
+               dependencies=[Depends(get_current_user), Depends(get_current_super_user)])
+async def delete_workout(
+        workout_id: int,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)):
+    workout = workout_crud.get_one(db, Workout.workout_id == workout_id)
+    if workout is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'Workout with id {workout_id} not found'
+        )
+    if not current_user.is_superuser and (workout.owner_id != current_user.user_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"You don`t have permission to delete this workout")
+    try:
+        workout_crud.delete(db, workout)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f'Something went wrong. {str(e)}'
+        )
+    return {f'Workout with id - {workout_id} deleted'}

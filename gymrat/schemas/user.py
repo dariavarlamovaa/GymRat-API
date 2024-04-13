@@ -12,13 +12,13 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     email: EmailStr
-    password: str
+    hashed_password: str
     is_superuser: bool = False
 
 
 class UserUpdate(UserBase):
     username: Optional[str] = None
-    password: Optional[str] = None
+    hashed_password: Optional[str] = None
     is_superuser: bool = False
 
 
