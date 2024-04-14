@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.get("/all", response_model=List[ExerciseOut], status_code=status.HTTP_200_OK,
             dependencies=[Depends(get_current_super_user)])
-async def fetch_all_exercises(
+def fetch_all_exercises(
         db: Session = Depends(get_db),
         skip: int = 0,
         limit: int = 100):
@@ -24,7 +24,7 @@ async def fetch_all_exercises(
 
 @router.get("/all/{exercise_id}", response_model=Optional[ExerciseOut],
             dependencies=[Depends(get_current_super_user)])
-async def fetch_one_exercise(
+def fetch_one_exercise(
         exercise_id: int = Path(..., description='The id of the exercise'),
         db: Session = Depends(get_db)):
     exercise = exercise_crud.get_one(db, Exercise.exercise_id == exercise_id)
@@ -38,7 +38,7 @@ async def fetch_one_exercise(
 
 @router.get("/title/{exercise_title}", response_model=Optional[ExerciseOut],
             dependencies=[Depends(get_current_super_user)])
-async def fetch_one_exercise_by_title(
+def fetch_one_exercise_by_title(
         exercise_title: str = Path(..., description='The title of the exercise'),
         db: Session = Depends(get_db)):
     exercise = exercise_crud.get_one(db, Exercise.title == exercise_title)
@@ -52,7 +52,7 @@ async def fetch_one_exercise_by_title(
 
 @router.get('/my', response_model=List[Optional[ExerciseOut]], status_code=status.HTTP_200_OK,
             dependencies=[Depends(get_current_user)])
-async def fetch_my_exercises(
+def fetch_my_exercises(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     exercises = exercise_crud.get_many(db, Exercise.owner_id == current_user.user_id)
@@ -66,7 +66,7 @@ async def fetch_my_exercises(
 
 @router.get('/my/{exercise_id}', response_model=Optional[ExerciseOut], status_code=status.HTTP_200_OK,
             dependencies=[Depends(get_current_user)])
-async def fetch_my_one_exercise(
+def fetch_my_one_exercise(
         exercise_id: int = Path(..., description='The id of the exercise'),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
@@ -84,7 +84,7 @@ async def fetch_my_one_exercise(
              response_model_exclude_unset=True,
              status_code=status.HTTP_201_CREATED,
              dependencies=[Depends(get_current_user)])
-async def create_new_exercise(
+def create_new_exercise(
         exercise_create: Annotated[
             ExerciseCreate,
             Body(examples=[
@@ -103,7 +103,7 @@ async def create_new_exercise(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     try:
-        exercise = exercise_crud.create_exercise(exercise_create, db, owner_id=current_user.user_id)
+        exercise = exercise_crud.create_with_owner(db, exercise_create, owner_id=current_user.user_id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -114,7 +114,7 @@ async def create_new_exercise(
 
 @router.put('/update/{exercise_id}', response_model=Optional[ExerciseOut], status_code=status.HTTP_200_OK,
             dependencies=[Depends(get_current_user)])
-async def update_exercise(
+def update_exercise(
         exercise_id: int,
         exercise_update: ExerciseUpdate,
         db: Session = Depends(get_db),
@@ -139,8 +139,9 @@ async def update_exercise(
     return exercise
 
 
-@router.delete('/delete/{exercise_id}', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_user)])
-async def delete_exercise(
+@router.delete('/delete/{exercise_id}', status_code=status.HTTP_200_OK,
+               dependencies=[Depends(get_current_user)])
+def delete_exercise(
         exercise_id: int,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):

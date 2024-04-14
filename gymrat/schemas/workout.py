@@ -17,17 +17,11 @@ class WorkoutCreate(WorkoutBase):
 
 
 class WorkoutUpdate(WorkoutBase):
-    ...
+    name: str = None
 
 
 class WorkoutOut(WorkoutBase):
     workout_id: int
     owner_id: int
+    exercises: Optional[List[ExerciseOut]] = []
     expires: Optional[date] = None
-
-
-class Workout(WorkoutBase):
-    workout_id: int
-    exercises: Optional[List[ExerciseOut]]
-    owner_id: int
-    model_config = ConfigDict(from_attributes=True)

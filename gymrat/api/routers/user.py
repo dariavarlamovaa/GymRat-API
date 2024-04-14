@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.get("/all", response_model=List[Optional[UserOut]], status_code=status.HTTP_200_OK,
             dependencies=[Depends(get_current_super_user)])
-async def fetch_all_users(
+def fetch_all_users(
         db: Session = Depends(get_db),
         skip: int = 0,
         limit: int = 100):
@@ -24,7 +24,7 @@ async def fetch_all_users(
 
 @router.get("/all/{user_id}", response_model=Optional[UserOut], status_code=status.HTTP_200_OK,
             dependencies=[Depends(get_current_super_user)])
-async def fetch_user_by_id(
+def fetch_user_by_id(
         user_id: int = Path(..., description='The id of the user'),
         db: Session = Depends(get_db)):
     user = user_crud.get_one(db, User.user_id == user_id)
@@ -38,7 +38,7 @@ async def fetch_user_by_id(
 
 @router.get("/username/{username}", response_model=Optional[UserOut], status_code=status.HTTP_200_OK,
             dependencies=[Depends(get_current_super_user)])
-async def fetch_user_by_username(
+def fetch_user_by_username(
         username: str = Path(..., description='The username of the user'),
         db: Session = Depends(get_db)):
     user = user_crud.get_user_by_username(db=db, username=username)
@@ -52,7 +52,7 @@ async def fetch_user_by_username(
 
 @router.get("/email/{email}", response_model=Optional[UserOut], status_code=status.HTTP_200_OK,
             dependencies=[Depends(get_current_super_user)])
-async def fetch_user_by_email(
+def fetch_user_by_email(
         email: str = Path(..., description='The email of the user'),
         db: Session = Depends(get_db)):
     user = user_crud.get_user_by_email(db=db, email=email)
@@ -64,9 +64,9 @@ async def fetch_user_by_email(
     return user
 
 
-@router.post("/create", response_model=UserOut, status_code=status.HTTP_201_CREATED,
+@router.post("/create", response_model=Optional[UserOut], status_code=status.HTTP_201_CREATED,
              dependencies=[Depends(get_current_super_user)])
-async def create_new_user(
+def create_new_user(
         user_create: UserCreate,
         db: Session = Depends(get_db)):
     user_username = user_crud.get_user_by_username(db, username=user_create.username)
@@ -77,17 +77,18 @@ async def create_new_user(
             detail='User with this email or username already exists'
         )
     try:
-        user_crud.create_user(db, user_create)
+        user_create.hashed_password = get_hashed_password(user_create.hashed_password)
+        user = user_crud.create(db, user_create)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'Can`t delete this user, {str(e)}'
         )
-    return user_create
+    return user
 
 
 @router.delete('/delete/{user_id}', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_super_user)])
-async def delete_one_user(
+def delete_one_user(
         user_id: int,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
@@ -116,7 +117,7 @@ async def delete_one_user(
 
 
 @router.put('/update/{user_id}', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_super_user)])
-async def update_one_user(
+def update_one_user(
         user_id: int,
         user_update: UserUpdate,
         db: Session = Depends(get_db),
@@ -141,14 +142,14 @@ async def update_one_user(
 
 
 @router.get('/me', status_code=status.HTTP_200_OK)
-async def fetch_user_me(
+def fetch_user_me(
         current_user: User = Depends(get_current_user)):
     return current_user
 
 
 @router.put('/update-my-data', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_user)],
             response_model=UserOut)
-async def update_my_data(
+def update_my_data(
         new_data: UserUpdateMyData, db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     user_username = user_crud.get_user_by_username(db, username=new_data.username)
@@ -174,7 +175,7 @@ async def update_my_data(
 
 @router.patch('/update-my-password', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_user)],
               response_model=UserOut)
-async def update_my_password(
+def update_my_password(
         new_password_data: UserUpdatePassword, db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     if not verify_password(new_password_data.current_password, current_user.hashed_password):

@@ -16,7 +16,7 @@ router = fastapi.APIRouter()
 
 
 @router.post('/login', response_model=Token)
-async def login_user(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()) -> Dict[str, Any]:
+def login_user(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()) -> Dict[str, Any]:
     user = user_crud.authenticate(db, username=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(
@@ -46,5 +46,5 @@ def register(new_user: Register, db: Session = Depends(get_db)):
         **new_user.model_dump(exclude_unset=True, exclude_defaults=True),
         hashed_password=get_hashed_password(new_user.password)
     )
-    user_crud.create_user(db, user_created)
+    user_crud.create(db, user_created)
     return user_created

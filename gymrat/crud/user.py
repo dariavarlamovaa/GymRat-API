@@ -17,15 +17,6 @@ class UserCRUDRep(ORMRep):
         user = self.get_one(db, self._model.email == email)
         return user
 
-    @staticmethod
-    def create_user(db: Session, user_create: UserCreate):
-        hashed_password = get_hashed_password(user_create.password)
-        db_user = User(username=user_create.username, email=user_create.email, hashed_password=hashed_password)
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return db_user
-
     def authenticate(self, db: Session, username: str, password: str) -> Optional[User]:
         user = self.get_user_by_username(db, username)
         if not user:
