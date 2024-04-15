@@ -31,13 +31,9 @@ def get_current_user(db: Session = Depends(get_db), token: TokenPayload = Depend
 
 
 def get_current_super_user(current_user: User = Depends(get_current_user)) -> User:
-    if not is_super_user(current_user):
+    if not current_user.is_superuser:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail='Access Forbidden'
         )
     return current_user
-
-
-def is_super_user(user: User) -> bool:
-    return user.is_superuser
