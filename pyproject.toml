@@ -1,0 +1,6 @@
+[tool.pytest.ini_options]
+pythonpath = ['.', 'gymrat']
+testpaths = [
+    "integration",
+    "unit"
+]
