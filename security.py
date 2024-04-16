@@ -5,6 +5,8 @@ from typing import Union, Any
 import jwt
 from passlib.context import CryptContext
 
+from gymrat.config import settings
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -15,7 +17,7 @@ def create_access_token(sub: Union[str, Any], expires_delta: timedelta = None) -
         expire = datetime.utcnow() + timedelta(minutes=30)
     to_encode = {"exp": expire, "sub": str(sub)}
     encoded = jwt.encode(
-        to_encode, 'secretkey', algorithm='HS256'
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
     return encoded
 
