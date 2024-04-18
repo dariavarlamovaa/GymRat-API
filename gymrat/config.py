@@ -36,13 +36,13 @@ class ContainerTestSettings(Settings):
     ENV: str = "test"
 
 
-def get_settings(env: str = "dev") -> Settings:
+def get_settings(env: str = "local") -> Settings:
     if env.lower() in ["local", "l"]:
         return ContainerLocalSettings()
     if env.lower() in ["test", "t", "testing"]:
         return ContainerTestSettings()
 
-    raise ValueError("Invalid environment. Must be 'dev' or 'test'.")
+    raise ValueError("Invalid environment. Must be 'local' or 'test'.")
 
 
 _env = os.environ.get("ENV", "local")

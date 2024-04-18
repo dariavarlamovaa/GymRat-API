@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from gymrat.config import settings
@@ -16,7 +16,6 @@ SessionLocal = sessionmaker(
 Base = declarative_base()
 
 
-# DB utilities
 def get_db():
     db = SessionLocal()
     try:
