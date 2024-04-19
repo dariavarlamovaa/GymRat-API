@@ -2,6 +2,8 @@ import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+
+from gymrat.config import settings
 from gymrat.crud.user import user_crud
 from gymrat.db.db_setup import get_db
 from gymrat.db.models.user import User
@@ -12,7 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def get_token(token: str = Depends(oauth2_scheme)) -> TokenPayload:
     try:
-        token_payload = jwt.decode(token, key="secretkey", algorithms=["HS256"])
+        token_payload = jwt.decode(token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM)
         token_data = TokenPayload(**token_payload)
     except Exception:
         raise HTTPException(
@@ -25,7 +27,7 @@ def get_current_user(db: Session = Depends(get_db), token: TokenPayload = Depend
     user = user_crud.get_one(db, User.user_id == token.sub)
     if user is None:
         raise HTTPException(
-            status_code=401,
+            status_code=404,
             detail='User not found')
     return user
 

@@ -19,7 +19,7 @@ def test_sqlalchemy_database_url():
 
 @pytest.fixture
 def test_settings():
-    return get_settings("test")
+    return get_settings('test')
 
 
 engine = create_engine(TEST_SQLALCHEMY_DATABASE_URL, echo=False)
