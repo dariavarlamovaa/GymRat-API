@@ -3,6 +3,7 @@ from datetime import timedelta
 import pytest
 from fastapi.testclient import TestClient
 
+from core.utils import _create_user
 from gymrat.config import get_settings
 from gymrat.db.db_setup import Base
 from main import app
@@ -45,7 +46,7 @@ def test_client():
 
 @pytest.fixture
 def get_test_db(_test_session):
-    db = _test_session
+    db = _test_session()
     try:
         yield db
     finally:
@@ -57,3 +58,22 @@ def create_valid_jwt_token():
     token = create_access_token('111')
     return f'Bearer23 {token}'
 
+
+@pytest.fixture
+def first_superuser(get_test_db):
+    return _create_user(get_test_db, 'admin', 'admin@mail.com', 'admin', True, True)
+
+
+@pytest.fixture
+def first_inactive_superuser(get_test_db):
+    return _create_user(get_test_db, 'admin', 'admin@mail.com', 'admin', False, True)
+
+
+@pytest.fixture
+def first_user(get_test_db):
+    return _create_user(get_test_db, 'user1', 'user1@mail.com', '111', True, False)
+
+
+@pytest.fixture
+def first_inactive_user(get_test_db):
+    return _create_user(get_test_db, 'user1', 'user1@mail.com', '111', False, False)

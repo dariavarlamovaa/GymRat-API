@@ -36,11 +36,12 @@ def login_user(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestFo
 
 @router.post('/signup', status_code=status.HTTP_201_CREATED)
 def register(new_user: Register, db: Session = Depends(get_db)):
-    user = user_crud.get_user_by_username(db, new_user.username)
-    if user:
+    user_username = user_crud.get_user_by_username(db, new_user.username)
+    user_email = user_crud.get_user_by_email(db, new_user.email)
+    if user_username or user_email:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f'User with username - "{new_user.username}" already exists'
+            detail=f'User with username or email already exists'
         )
     user_created = UserCreate(
         **new_user.model_dump(exclude_unset=True, exclude_defaults=True),
