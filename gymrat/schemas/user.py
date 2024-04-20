@@ -14,6 +14,7 @@ class UserCreate(UserBase):
     email: EmailStr
     hashed_password: str
     is_superuser: bool = False
+    is_active: bool = True
 
 
 class UserUpdate(UserBase):
