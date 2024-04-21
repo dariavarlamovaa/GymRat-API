@@ -87,7 +87,7 @@ def create_new_user(
     return user
 
 
-@router.delete('/delete/{user_id}', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_super_user)])
+@router.delete('/delete/{user_id}', status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_user)])
 def delete_one_user(
         user_id: int,
         db: Session = Depends(get_db),
@@ -128,8 +128,8 @@ def update_one_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f'User with {user_id} not found'
         )
-    if user_update.password is not None:
-        user_password = user_update.password
+    if user_update.hashed_password is not None:
+        user_password = user_update.hashed_password
         current_user.hashed_password = get_hashed_password(user_password)
     try:
         user = user_crud.update(db, user, user_update)
