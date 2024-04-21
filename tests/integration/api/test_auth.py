@@ -13,7 +13,7 @@ def test_login_user(test_client, first_superuser):
     assert user_data['token_type'] == 'bearer'
 
 
-def test_login_with_wrong_password(test_client, first_inactive_user):
+def test_not_allowed_to_login_with_wrong_password(test_client, first_inactive_user):
     response = test_client.post(
         "/auth/login",
         data={
@@ -25,7 +25,7 @@ def test_login_with_wrong_password(test_client, first_inactive_user):
     assert response.json()["detail"] == "Invalid username or password"
 
 
-def test_login_with_wrong_username(test_client, first_superuser):
+def test_now_allowed_to_login_with_wrong_username(test_client, first_superuser):
     response = test_client.post(
         "/auth/login",
         data={
@@ -37,7 +37,7 @@ def test_login_with_wrong_username(test_client, first_superuser):
     assert response.json()["detail"] == "Invalid username or password"
 
 
-def test_login_inactive_user(test_client, first_inactive_user):
+def test_not_allowed_to_login_inactive_user(test_client, first_inactive_user):
     response = test_client.post(
         "/auth/login",
         data={
@@ -61,7 +61,7 @@ def test_signup_success(test_client):
     assert response.status_code == 201
 
 
-def test_signup_existing_user(test_client, first_superuser):
+def test_now_allowed_to_signup_existing_user(test_client, first_superuser):
     user_data = {
         "username": "admin",
         "email": "admin@mail.com",

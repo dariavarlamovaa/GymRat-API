@@ -54,9 +54,9 @@ def get_test_db(_test_session):
 
 
 @pytest.fixture
-def create_valid_jwt_token():
-    token = create_access_token('111')
-    return f'Bearer23 {token}'
+def valid_jwt_token() -> dict[str, str]:
+    token = create_access_token("1")
+    return {"Authorization": f"Bearer {token}"}
 
 
 @pytest.fixture
