@@ -91,7 +91,7 @@ def create_new_exercise(
                 {
                     "title": "Leg Press",
                     "equipment": "Leg Press machine",
-                    "muscle": "Choose one: arms, core, full body, back, legs",
+                    "muscle": "Choose one: arms, core, full_body, back, legs",
                     "exercise_type": "Choose one: weight, cardio",
                     "level": "Choose one: beginner, intermediate, expert",
                     "description": "string",
