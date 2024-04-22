@@ -1,11 +1,12 @@
-from typing import Optional
-
 from fastapi import HTTPException, status
 from pydantic import EmailStr
 from sqlmodel import Session
 
+from gymrat.crud.exercises import exercise_crud
 from gymrat.crud.user import user_crud
+from gymrat.db.models.exercise import Exercise
 from gymrat.db.models.user import User
+from gymrat.schemas.exercise import ExerciseCreate
 from gymrat.schemas.user import UserCreate
 from security import get_hashed_password
 
@@ -33,3 +34,18 @@ def _create_user(
     )
     user = user_crud.create(db, create_obj=created_user)
     return user
+
+
+def _create_exercise(db: Session,
+                     user: User,
+                     title: str,
+                     equipment: str,
+                     muscle: str,
+                     exercise_type: str,
+                     level: str
+                     ) -> Exercise:
+    owner_id = user.user_id
+    assert owner_id is not None
+
+    item_in = ExerciseCreate(title=title, equipment=equipment, muscle=muscle, exercise_type=exercise_type, level=level)
+    return exercise_crud.create_with_owner(db, item_in, owner_id)
