@@ -41,7 +41,7 @@ class Exercise(Timestamp, Base):
     tips = Column(Text, nullable=True)
     description = Column(Text, nullable=True)
     url = Column(URLType, nullable=True)
-    owner_id = Column(Integer, ForeignKey('users.user_id'))
+    owner_id = Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'))
 
     workouts = relationship("Workout", secondary=workouts_exercises, back_populates='exercises')
 

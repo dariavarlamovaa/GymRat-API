@@ -49,7 +49,8 @@ def upgrade() -> None:
                               server_default=sa.text("now()"), autoincrement=False, nullable=False),
                     sa.Column('updated_at', sa.DateTime(timezone=True),
                               server_default=sa.text("now()"), autoincrement=False, nullable=False),
-                    sa.ForeignKeyConstraint(['owner_id'], ['users.user_id'], name='workouts_owner_id_fkey'),
+                    sa.ForeignKeyConstraint(['owner_id'], ['users.user_id'], name='workouts_owner_id_fkey',
+                                            ondelete='CASCADE'),
                     sa.PrimaryKeyConstraint('workout_id', name='workouts_pkey'),
                     sa.UniqueConstraint('name', 'owner_id', name='workouts_name_owner_id_key')
                     )
@@ -64,7 +65,8 @@ def upgrade() -> None:
                     sa.Column('description', sa.TEXT(), autoincrement=False, nullable=True),
                     sa.Column('url', sa.TEXT(), autoincrement=False, nullable=True),
                     sa.Column('owner_id', sa.INTEGER(), autoincrement=False, nullable=True),
-                    sa.ForeignKeyConstraint(['owner_id'], ['users.user_id'], name='exercises_owner_id_fkey'),
+                    sa.ForeignKeyConstraint(['owner_id'], ['users.user_id'], name='exercises_owner_id_fkey',
+                                            ondelete='CASCADE'),
                     sa.Column('created_at', sa.DateTime(timezone=True),
                               server_default=sa.text("now()"), autoincrement=False, nullable=False),
                     sa.Column('updated_at', sa.DateTime(timezone=True),

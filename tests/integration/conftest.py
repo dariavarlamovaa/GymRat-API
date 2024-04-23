@@ -1,9 +1,7 @@
-from datetime import timedelta
-
 import pytest
 from fastapi.testclient import TestClient
 
-from core.utils import _create_user
+from core.utils import _create_user, _create_exercise, _create_workout
 from gymrat.config import get_settings
 from gymrat.db.db_setup import Base
 from main import app
@@ -77,3 +75,28 @@ def first_user(get_test_db):
 @pytest.fixture
 def first_inactive_user(get_test_db):
     return _create_user(get_test_db, 'user1', 'user1@mail.com', '111', False, False)
+
+
+@pytest.fixture
+def create_users(get_test_db):
+    _create_user(get_test_db, 'test1', 'test1@mail.com', '111',
+                 True, False)
+    _create_user(get_test_db, 'test2', 'test2@mail.com', '111',
+                 True, False)
+
+
+@pytest.fixture
+def create_exercises(get_test_db, first_user, first_superuser):
+    _create_exercise(get_test_db, first_user, 'testex1', 'eq1', 'legs',
+                     'weight', 'intermediate')
+    _create_exercise(get_test_db, first_superuser, 'testex2', 'eq2', 'arms',
+                     'weight', 'beginner')
+    _create_exercise(get_test_db, first_user, 'testex3', 'eq3', 'core',
+                     'weight', 'expert')
+
+
+@pytest.fixture
+def create_workout(get_test_db, first_user, first_superuser):
+    _create_workout(get_test_db, first_user, 'workout1', expires='2024-05-29')
+    _create_workout(get_test_db, first_superuser, 'workout2', expires='2024-06-29')
+    _create_workout(get_test_db, first_user, 'workout3', 'description', '2024-05-29')

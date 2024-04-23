@@ -76,15 +76,11 @@ def fetch_one_workout_by_title(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     workout = workout_crud.get_one(db, Workout.name == workout_name)
-    if workout is None:
+    if (not current_user.is_superuser and (workout.owner_id != current_user.user_id)) \
+            or workout is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Workout with name: '{workout_name}' not found",
-        )
-    if not current_user.is_superuser and (workout.owner_id != current_user.user_id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail='Access forbidden'
+            detail=f"Workout with name: '{workout_name}' not found"
         )
     return workout
 
@@ -130,15 +126,11 @@ def update_workout(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     workout = workout_crud.get_one(db, Workout.workout_id == workout_id)
-    if workout is None:
+    if (not current_user.is_superuser and (workout.owner_id != current_user.user_id)) \
+            or workout is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'Workout with id {workout_id} not found'
-        )
-    if not current_user.is_superuser and (workout.owner_id != current_user.user_id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"You don`t have permission to update this workout")
+            detail=f"Workout with id {workout_id} not found")
     try:
         workout_crud.update(db, workout, workout_update)
     except Exception as e:
@@ -156,15 +148,11 @@ def delete_workout(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     workout = workout_crud.get_one(db, Workout.workout_id == workout_id)
-    if workout is None:
+    if (not current_user.is_superuser and (workout.owner_id != current_user.user_id)) \
+            or workout is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'Workout with id {workout_id} not found'
-        )
-    if not current_user.is_superuser and (workout.owner_id != current_user.user_id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"You don`t have permission to delete this workout")
+            detail=f"Workout with id {workout_id} not found")
     try:
         workout_crud.delete(db, workout)
     except Exception as e:
@@ -175,27 +163,23 @@ def delete_workout(
     return {f'Workout with id - {workout_id} deleted'}
 
 
-@router.get('/{workout_id}}/exercises', response_model=List[Optional[ExerciseOut]],
+@router.get('/{workout_id}/exercises', response_model=List[Optional[ExerciseOut]],
             dependencies=[Depends(get_current_user)], status_code=status.HTTP_200_OK)
 def fetch_exercises_from_workout(
         workout_id: int,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)):
     workout = workout_crud.get_one(db, Workout.workout_id == workout_id)
-    if workout is None:
+    if (not current_user.is_superuser and (workout.owner_id != current_user.user_id))\
+            or workout is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'Workout with id {workout_id} not found'
-        )
-    if not current_user.is_superuser and (workout.owner_id != current_user.user_id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Access forbidden"
+            detail=f"Workout with id {workout_id} not found"
         )
     return workout.exercises
 
 
-@router.put('/add_exercise', response_model=Optional[WorkoutOut],
+@router.put('/{workout_id}/add/{exercise_id}', response_model=Optional[WorkoutOut],
             dependencies=[Depends(get_current_user)], status_code=status.HTTP_200_OK)
 def add_exercise_to_workout(
         workout_id: int,
@@ -234,9 +218,9 @@ def add_exercise_to_workout(
     return workout
 
 
-@router.put('/remove-exercise', response_model=Optional[WorkoutOut],
+@router.put('/{workout_id}/remove/{exercise_id}', response_model=Optional[WorkoutOut],
             dependencies=[Depends(get_current_user)], status_code=status.HTTP_200_OK)
-def add_exercise_to_workout(
+def remove_one_exercise_from_workout(
         workout_id: int,
         exercise_id: int,
         db: Session = Depends(get_db),
@@ -262,7 +246,7 @@ def add_exercise_to_workout(
         workout = workout_crud.remove_exercise_from_workout(db, workout=workout, exercise=exercise)
     except ValueError:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=f'Exercise with id - {exercise.exercise_id} not in this workout'
         )
     except Exception as e:

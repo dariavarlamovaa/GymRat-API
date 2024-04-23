@@ -1,18 +1,3 @@
-import pytest
-
-from core.utils import _create_exercise
-
-
-@pytest.fixture
-def create_exercises(get_test_db, first_user, first_superuser):
-    _create_exercise(get_test_db, first_user, 'testex1', 'eq1', 'legs',
-                     'weight', 'intermediate')
-    _create_exercise(get_test_db, first_superuser, 'testex2', 'eq2', 'arms',
-                     'weight', 'beginner')
-    _create_exercise(get_test_db, first_user, 'testex3', 'eq3', 'core',
-                     'weight', 'expert')
-
-
 def test_fetch_all_exercises(test_client, first_superuser, valid_jwt_token, create_exercises):
     response = test_client.get('/exercises/all', headers=valid_jwt_token)
     assert response.status_code == 200 and len(response.json()) == 3
