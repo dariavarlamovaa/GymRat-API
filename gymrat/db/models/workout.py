@@ -24,7 +24,7 @@ class Workout(Timestamp, Base):
     name = Column(String(40), nullable=False)
     description = Column(Text, nullable=True)
     expires = Column(Date, nullable=True)
-    owner_id = Column(Integer, ForeignKey('users.user_id'))
+    owner_id = Column(Integer, ForeignKey('users.user_id', ondelete='CASCADE'))
 
     owner = relationship('User', back_populates='workouts')
     exercises = relationship('Exercise', secondary=workouts_exercises, back_populates="workouts")

@@ -1,16 +1,3 @@
-import pytest
-
-from core.utils import _create_user
-
-
-@pytest.fixture
-def create_users(get_test_db):
-    _create_user(get_test_db, 'test1', 'test1@mail.com', '111',
-                 True, False)
-    _create_user(get_test_db, 'test2', 'test2@mail.com', '111',
-                 True, False)
-
-
 def test_fetch_all_users(test_client, first_superuser, create_users, valid_jwt_token):
     response = test_client.get('/users/all', headers=valid_jwt_token)
     assert response.status_code == 200
