@@ -27,9 +27,6 @@ def test_fetch_one_workout(test_client, first_superuser, create_workout, valid_j
 
     response = test_client.get('/workouts/all/1')
     assert response.status_code == 401
-
-    response = test_client.get('/workouts/all/1')
-    assert response.status_code == 401
     assert response.json()['detail'] == "Not authenticated"
 
 
@@ -169,3 +166,29 @@ def test_remove_one_exercise_from_workout(test_client, first_user, create_workou
     response = test_client.put('/workouts/1/remove/3', headers=valid_jwt_token)
     assert response.status_code == 404
     assert response.json()['detail'] == "Exercise with id - 3 not in this workout"
+
+
+def test_can_modify_workouts_if_super_user(test_client, first_superuser, valid_jwt_token, create_workout,
+                                          create_exercises):
+    new_workout = {'name': 'test_workout', 'description': 'test_description', 'expires': '2024-06-05'}
+    response = test_client.post('/workouts/create', headers=valid_jwt_token, json=new_workout)
+    assert response.status_code == 201
+    assert response.json()['name'] == 'test_workout'
+
+    updated_data = {'name': 'updated_name'}
+    response = test_client.put('/workouts/update/1', headers=valid_jwt_token, json=updated_data)
+    assert response.status_code == 200
+    assert response.json()['name'] == 'updated_name'
+
+    response = test_client.get('/workouts/1/exercises', headers=valid_jwt_token)
+    assert response.status_code == 200
+    assert len(response.json()) == 0
+
+    response = test_client.put('/workouts/1/add/1', headers=valid_jwt_token)
+    assert response.status_code == 200
+
+    response = test_client.put('/workouts/1/remove/1', headers=valid_jwt_token)
+    assert response.status_code == 200
+
+    response = test_client.delete('/workouts/delete/1', headers=valid_jwt_token)
+    assert response.status_code == 200
