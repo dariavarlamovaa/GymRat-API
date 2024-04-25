@@ -1,4 +1,3 @@
-from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from gymrat.crud.base import ORMRep

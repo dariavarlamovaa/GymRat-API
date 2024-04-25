@@ -4,8 +4,7 @@ from sqlalchemy.orm import Session
 
 from gymrat.crud.base import ORMRep
 from gymrat.db.models.user import User
-from gymrat.schemas.user import UserCreate
-from security import get_hashed_password, verify_password
+from security import verify_password
 
 
 class UserCRUDRep(ORMRep):

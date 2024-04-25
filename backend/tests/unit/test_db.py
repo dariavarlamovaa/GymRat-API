@@ -1,7 +1,6 @@
 from types import GeneratorType
 from unittest.mock import patch
 
-import pytest
 from sqlalchemy.orm import Session
 
 from tests.conftest import override_get_db
